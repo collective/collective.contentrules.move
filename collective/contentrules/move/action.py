@@ -32,12 +32,13 @@ class MoveAction(SimpleItem):
 
     destination = ''
     bypasspermissions = False
+    reindex = False
     element = "collective.contentrules.move.ApplyMove"
 
     @property
     def summary(self):
         return _(u"Move content to ${destination}",
-                 mapping=dict(field=self.destination))
+                 mapping=dict(destination=self.destination))
 
 
 class MoveActionExecutor(object):
@@ -54,7 +55,6 @@ class MoveActionExecutor(object):
 
     def __call__(self):
         obj = self.event.object
-
         destination = getattr(self.element, 'destination')
         if destination is None:
             self.error("No destination defined in content rule.")
@@ -73,7 +73,8 @@ class MoveActionExecutor(object):
                                                 '')
                     tmp_user = tmp_user.__of__(portal.acl_users)
                     newSecurityManager(self.request, tmp_user)
-                    api.content.move(source=obj, target=destination)
+                moved_object = api.content.move(source=obj,
+                                                target=destination)
             except Exception as e:
                 # TODO: Handle exceptions more elegantly
                 self.error(obj, e)
@@ -83,7 +84,7 @@ class MoveActionExecutor(object):
                 setSecurityManager(sm)
 
         if getattr(self.element, 'reindex', False) is True:
-            destination.reindexObject()
+            moved_object.reindexObject()
 
         return True
 

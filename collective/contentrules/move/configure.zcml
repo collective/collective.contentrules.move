@@ -26,7 +26,7 @@
     <plone:ruleAction
         name="collective.contentrules.move.ApplyMove"
         title="Move to destination"
-        description="Move the objet to a destination"
+        description="Move the object to a destination"
         for="*"
         event="zope.component.interfaces.IObjectEvent"
         addview="collective.contentrules.move.ApplyMove"
